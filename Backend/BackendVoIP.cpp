@@ -3,11 +3,6 @@
 #include "BackendVoIP.h"
 using namespace std;
 
-enum CodecType {
-    g711, g722, opus, ilbc, g729, g728, g7231MPCMLQ, g7231ACELP
-};
-
-
 float selectCodec(CodecType Codec){
     switch (Codec){
         case g711:
