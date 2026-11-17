@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "../Backend/BackendVoIP.h" // Podpięcie Twojego backendu
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,9 +16,10 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_calculateButton_clicked(); // Deklaracja akcji dla przycisku
+    void on_calculateButton_clicked();
 
 private:
     Ui::MainWindow *ui;
 };
+
 #endif // MAINWINDOW_H
