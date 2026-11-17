@@ -8,17 +8,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // 1. Wypełnienie listy rozwijanej dostępnymi kodekami
     ui->codecComboBox->addItems({
         "g.711", "g.722", "Opus", "iLBC", "g.729", "g.728", "g.723.1 MPC-MLQ", "g.723.1 ACELP"
     });
 
-    // 2. Ustawienie stanu początkowego dla sumy kontrolnej (wyłączona i odznaczona)
+
     ui->controlSumCheckBox->setEnabled(false);
     ui->controlSumCheckBox->setChecked(false);
 
-    // 3. Automatyczne powiązanie: gdy klikniesz kompresję, włącz/wyłącz sumę kontrolną
-    // i automatycznie ją odznacz, jeśli kompresja zostaje wyłączona.
+
     connect(ui->compressedCheckBox, &QCheckBox::toggled, this, [this](bool checked) {
         ui->controlSumCheckBox->setEnabled(checked);
         if (!checked) {
@@ -26,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    // 4. Nowoczesny, ciemny styl z obsługą wygaszonych checkboxów
     this->setStyleSheet(
         "QMainWindow { background-color: #1e1e1e; }"
         "QLabel { color: #d4d4d4; font-size: 14px; }"
@@ -49,7 +46,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_calculateButton_clicked()
 {
-    // 1. Zczytanie wybranego kodeka i dopasowanie do nowych nazw
+
     QString wybranyTekst = ui->codecComboBox->currentText();
     CodecType wybranyKodek = g711; 
     
@@ -62,7 +59,6 @@ void MainWindow::on_calculateButton_clicked()
     else if (wybranyTekst == "g.723.1 MPC-MLQ") wybranyKodek = g7231MPCMLQ;
     else if (wybranyTekst == "g.723.1 ACELP") wybranyKodek = g7231ACELP;
 
-    // 2. Zczytanie wpisanego ptime i automatyczna weryfikacja/korekta
     int wpisanyPtime = ui->ptimeSpinBox->value();
     int poprawnyPtime = validatePtime(wybranyKodek, wpisanyPtime);
 
@@ -70,15 +66,12 @@ void MainWindow::on_calculateButton_clicked()
         ui->ptimeSpinBox->setValue(poprawnyPtime);
     }
 
-    // 3. Zczytanie stanu opcji (Checkboxów)
     bool isCompressed = ui->compressedCheckBox->isChecked();
     bool hasControlSum = ui->controlSumCheckBox->isChecked();
     bool isVlan = ui->vlanCheckBox->isChecked();
     bool isVad = ui->vadCheckBox->isChecked();
 
-    // 4. Wywołanie backendu
     float totalBandwidth = calculateBandwidth(wybranyKodek, poprawnyPtime, isCompressed, hasControlSum, isVlan, isVad);
 
-    // 5. Wyświetlenie wyniku
     ui->wynikLabel->setText("Wynik: " + QString::number(totalBandwidth, 'f', 2) + " kbps");
 }
