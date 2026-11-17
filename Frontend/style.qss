@@ -1,0 +1,156 @@
+/* ===== Kalkulator VoIP - styl z Figmy =====
+   Kolory:  tlo #0A1120 / #15274B, panel #111B30 (obrys #22304F),
+            pole #0A1120 (obrys #2A3A5C), akcent #A78BFA,
+            tekst #E6EDF9, tekst drugorzedny #9AA8C4, nieaktywny #7C879F
+   Fonty:   Inter (teksty), JetBrains Mono (pola i wynik)               */
+
+QMainWindow { background: #0A1120; }
+
+#centralwidget {
+    background: qradialgradient(cx:0.5, cy:0, radius:0.9, fx:0.5, fy:0,
+                                stop:0.33 #15274B, stop:0.82 #0A1120);
+}
+
+QWidget { font-family: "Inter"; font-size: 15px; color: #E6EDF9; }
+
+QLabel { background: transparent; }
+
+/* --- naglowek --- */
+#titleLabel    { color: #A78BFA; font-size: 40px; font-weight: 700; }
+#subtitleLabel { color: #9AA8C4; font-size: 17px; }
+
+/* --- panel --- */
+#panel { background: #111B30; border: 1px solid #22304F; border-radius: 14px; }
+
+#paramsTitle, #resultsTitle { color: #A78BFA; font-size: 14px; font-weight: 700; }
+#inputPanelLabel { color: #9AA8C4; font-family: "JetBrains Mono"; font-size: 12px; }
+
+#divider1, #divider2 { background: #22304F; border: none; }
+
+#codecLabel, #ptimeLabel { font-size: 14px; font-weight: 600; }
+
+/* --- lista kodekow --- */
+QComboBox {
+    background: #0A1120;
+    border: 1px solid #4C3A8A;
+    border-radius: 8px;
+    padding: 0px 16px 0px 20px;
+    min-height: 38px;
+    font-family: "JetBrains Mono";
+    font-size: 14px;
+    font-weight: 700;
+    color: #E6EDF9;
+}
+QComboBox:hover, QComboBox:focus, QComboBox:on { border-color: #A78BFA; }
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    width: 36px;
+    border: none;
+    background: transparent;
+}
+QComboBox::down-arrow { image: url(:/icons/chevron-down.png); width: 12px; height: 8px; }
+QComboBox QAbstractItemView {
+    background: #0A1120;
+    border: 1px solid #4C3A8A;
+    color: #E6EDF9;
+    selection-background-color: #4C3A8A;
+    selection-color: #E6EDF9;
+    font-family: "JetBrains Mono";
+    font-size: 14px;
+    outline: 0;
+}
+QComboBox QAbstractItemView::item { min-height: 28px; padding-left: 8px; }
+
+/* --- czas pakietowania --- */
+#ptimeBox {
+    background: #0A1120;
+    border: 1px solid #2A3A5C;
+    border-radius: 8px;
+    min-height: 38px;
+    padding-left: 16px; 
+}
+#ptimeBox QSpinBox {
+    background: transparent;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}
+/* Ukrycie domyślnych strzałek Qt */
+#ptimeBox QSpinBox::up-button, #ptimeBox QSpinBox::down-button {
+    width: 0px;
+    height: 0px;
+    border: none;
+    background: none;
+}
+#msLabel { font-size: 14px; font-weight: 600; padding-right: 16px; }
+#ptimeButtons { background: transparent; border: none; border-left: 1px solid #2A3A5C; }
+#ptimeUp, #ptimeDown { background: transparent; border: none; border-radius: 0px; }
+#ptimeDown { border-top: 1px solid #2A3A5C; }
+#ptimeUp:hover, #ptimeDown:hover { background: #15274B; }
+#ptimeUp:pressed, #ptimeDown:pressed { background: #22304F; }
+#ptimeUp   { qproperty-icon: url(:/icons/chevron-up.png);   qproperty-iconSize: 12px 8px; }
+#ptimeDown { qproperty-icon: url(:/icons/chevron-down.png); qproperty-iconSize: 12px 8px; }
+/* Ukrycie domyślnych strzałek Qt, które zaburzały wymiary */
+#ptimeBox QSpinBox::up-button, #ptimeBox QSpinBox::down-button {
+    width: 0px;
+    height: 0px;
+    border: none;
+    background: none;
+}
+#msLabel { font-size: 14px; font-weight: 600; padding-right: 16px; }
+#ptimeButtons { background: transparent; border: none; border-left: 1px solid #2A3A5C; }
+#ptimeUp, #ptimeDown { background: transparent; border: none; border-radius: 0px; }
+#ptimeDown { border-top: 1px solid #2A3A5C; }
+#ptimeUp:hover, #ptimeDown:hover { background: #15274B; }
+#ptimeUp:pressed, #ptimeDown:pressed { background: #22304F; }
+#ptimeUp   { qproperty-icon: url(:/icons/chevron-up.png);   qproperty-iconSize: 12px 8px; }
+#ptimeDown { qproperty-icon: url(:/icons/chevron-down.png); qproperty-iconSize: 12px 8px; }
+
+/* --- dodatkowe opcje --- */
+#optionsLabel {
+    font-family: "JetBrains Mono";
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-left: 2px solid #E6EDF9;
+    padding-left: 8px;
+}
+
+QCheckBox { background: transparent; spacing: 10px; font-size: 15px; color: #E6EDF9; min-height: 17px; }
+QCheckBox:disabled { color: #7C879F; }
+QCheckBox::indicator {
+    width: 17px;
+    height: 17px;
+    background: #E6EDF9;
+    border: 1px solid #757575;
+    border-radius: 2px;
+}
+QCheckBox::indicator:hover   { border-color: #A78BFA; }
+QCheckBox::indicator:checked { background: #A78BFA; border-color: #A78BFA; image: url(:/icons/check.png); }
+QCheckBox::indicator:disabled { background: #757575; border-color: #6B6868; }
+
+/* --- przycisk --- */
+QPushButton#calculateButton {
+    background: #A78BFA;
+    color: #0A1120;
+    border: none;
+    border-radius: 8px;
+    min-height: 35px;
+    font-size: 16px;
+    font-weight: 600;
+}
+QPushButton#calculateButton:hover   { background: #B7A0FB; }
+QPushButton#calculateButton:pressed { background: #8F70F2; }
+
+/* --- wynik --- */
+#wynikLabel {
+    background: #0A1120;
+    border: 1px solid #A78BFA;
+    border-radius: 8px;
+    min-height: 48px;
+    font-family: "JetBrains Mono";
+    font-size: 22px;
+    font-weight: 700;
+    color: #E6EDF9;
+}

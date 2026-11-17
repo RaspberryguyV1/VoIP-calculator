@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "../Backend/BackendVoIP.h" 
+#include <QLineEdit> // Wymagane, by dostać się do ukrytego pola
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -8,14 +9,28 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->codecComboBox->addItems({
-        "g.711", "g.722", "Opus", "iLBC", "g.729", "g.728", "g.723.1 MPC-MLQ", "g.723.1 ACELP"
-    });
+    // ==========================================
+    // 1. NAPRAWA WIZUALNA: Legalne obejście "protected"
+    // ==========================================
+    // Znajdujemy wbudowane pole tekstowe wewnątrz SpinBoxa i wymuszamy na nim rozmiar
+    QLineEdit *spinBoxLineEdit = ui->ptimeSpinBox->findChild<QLineEdit*>();
+    if (spinBoxLineEdit) {
+        spinBoxLineEdit->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        spinBoxLineEdit->setMinimumWidth(60); // <-- To bezwzględnie wymusza wyrysowanie tekstu!
+    }
 
+    // Tekst + przypisany do niego kodek
+    ui->codecComboBox->addItem("G.711 (64 kb/s)",              static_cast<int>(g711));
+    ui->codecComboBox->addItem("G.722 (64 kb/s)",              static_cast<int>(g722));
+    ui->codecComboBox->addItem("Opus (32 kb/s)",               static_cast<int>(opus));
+    ui->codecComboBox->addItem("iLBC (15,2 kb/s)",             static_cast<int>(ilbc));
+    ui->codecComboBox->addItem("G.729 (8 kb/s)",               static_cast<int>(g729));
+    ui->codecComboBox->addItem("G.728 (16 kb/s)",              static_cast<int>(g728));
+    ui->codecComboBox->addItem("G.723.1 MPC-MLQ (6,3 kb/s)",   static_cast<int>(g7231MPCMLQ));
+    ui->codecComboBox->addItem("G.723.1 ACELP (5,3 kb/s)",     static_cast<int>(g7231ACELP));
 
     ui->controlSumCheckBox->setEnabled(false);
     ui->controlSumCheckBox->setChecked(false);
-
 
     connect(ui->compressedCheckBox, &QCheckBox::toggled, this, [this](bool checked) {
         ui->controlSumCheckBox->setEnabled(checked);
@@ -24,19 +39,46 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    this->setStyleSheet(
-        "QMainWindow { background-color: #1e1e1e; }"
-        "QLabel { color: #d4d4d4; font-size: 14px; }"
-        "QGroupBox { color: #4fc1ff; font-weight: bold; border: 1px solid #3c3c3c; margin-top: 15px; padding-top: 15px; border-radius: 5px; }"
-        "QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; left: 10px; padding: 0 5px; }"
-        "QComboBox, QSpinBox { background-color: #2d2d2d; color: #ffffff; border: 1px solid #444444; padding: 6px; font-size: 14px; border-radius: 4px; }"
-        "QCheckBox { color: #d4d4d4; font-size: 14px; spacing: 8px; margin: 4px 0px; }"
-        "QCheckBox:disabled { color: #555555; }"
-        "QPushButton { background-color: #0e639c; color: white; font-weight: bold; font-size: 14px; padding: 10px; border-radius: 5px; border: none; }"
-        "QPushButton:hover { background-color: #1177bb; }"
-        "QPushButton:pressed { background-color: #094771; }"
-        "#wynikLabel { color: #2ecc71; font-size: 22px; font-weight: bold; margin-top: 10px; }"
-    );
+    // ==========================================
+    // 2. ŻELAZNA WALIDACJA "W LOCIE"
+    // ==========================================
+    connect(ui->ptimeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int value) {
+        CodecType wybranyKodek = static_cast<CodecType>(ui->codecComboBox->currentData().toInt());
+        int poprawnyPtime = validatePtime(wybranyKodek, value);
+        
+        if (value != poprawnyPtime) {
+            ui->ptimeSpinBox->blockSignals(true); 
+            ui->ptimeSpinBox->setValue(poprawnyPtime);
+            ui->ptimeSpinBox->blockSignals(false);
+        }
+    });
+
+    // ==========================================
+    // 3. DOSTOSOWANIE KROKU DO KODEKA
+    // ==========================================
+    connect(ui->codecComboBox, &QComboBox::currentIndexChanged, this, [this]() {
+        CodecType wybranyKodek = static_cast<CodecType>(ui->codecComboBox->currentData().toInt());
+        
+        if (wybranyKodek == g7231MPCMLQ || wybranyKodek == g7231ACELP) {
+            ui->ptimeSpinBox->setSingleStep(30);
+            ui->ptimeSpinBox->setValue(30);
+        } else {
+            ui->ptimeSpinBox->setSingleStep(10);
+            ui->ptimeSpinBox->setValue(20);
+        }
+    });
+
+    // ==========================================
+    // 4. PODŁĄCZENIE TWOICH STRZAŁEK
+    // ==========================================
+    ui->ptimeUp->disconnect();
+    ui->ptimeDown->disconnect();
+    
+    connect(ui->ptimeUp, &QToolButton::clicked, ui->ptimeSpinBox, &QSpinBox::stepUp);
+    connect(ui->ptimeDown, &QToolButton::clicked, ui->ptimeSpinBox, &QSpinBox::stepDown);
+
+    // Wymuszenie załadowania ustawień startowych
+    emit ui->codecComboBox->currentIndexChanged(0);
 }
 
 MainWindow::~MainWindow()
@@ -46,25 +88,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_calculateButton_clicked()
 {
-
-    QString wybranyTekst = ui->codecComboBox->currentText();
-    CodecType wybranyKodek = g711; 
-    
-    if (wybranyTekst == "g.711") wybranyKodek = g711;
-    else if (wybranyTekst == "g.722") wybranyKodek = g722;
-    else if (wybranyTekst == "Opus") wybranyKodek = opus;
-    else if (wybranyTekst == "iLBC") wybranyKodek = ilbc;
-    else if (wybranyTekst == "g.729") wybranyKodek = g729;
-    else if (wybranyTekst == "g.728") wybranyKodek = g728;
-    else if (wybranyTekst == "g.723.1 MPC-MLQ") wybranyKodek = g7231MPCMLQ;
-    else if (wybranyTekst == "g.723.1 ACELP") wybranyKodek = g7231ACELP;
-
+    CodecType wybranyKodek = static_cast<CodecType>(ui->codecComboBox->currentData().toInt());
     int wpisanyPtime = ui->ptimeSpinBox->value();
+    
     int poprawnyPtime = validatePtime(wybranyKodek, wpisanyPtime);
-
-    if (wpisanyPtime != poprawnyPtime) {
-        ui->ptimeSpinBox->setValue(poprawnyPtime);
-    }
+    ui->ptimeSpinBox->setValue(poprawnyPtime);
 
     bool isCompressed = ui->compressedCheckBox->isChecked();
     bool hasControlSum = ui->controlSumCheckBox->isChecked();
@@ -73,5 +101,6 @@ void MainWindow::on_calculateButton_clicked()
 
     float totalBandwidth = calculateBandwidth(wybranyKodek, poprawnyPtime, isCompressed, hasControlSum, isVlan, isVad);
 
-    ui->wynikLabel->setText("Wynik: " + QString::number(totalBandwidth, 'f', 2) + " kbps");
+    QString wynik = QString::number(totalBandwidth, 'f', 2).replace('.', ',');
+    ui->wynikLabel->setText(wynik + " kbps");
 }

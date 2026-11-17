@@ -1,0 +1,25 @@
+<RCC>
+  <qresource prefix="/">
+    <file>style.qss</file>
+    <file>icons/params.png</file>
+    <file>icons/params@2x.png</file>
+    <file>icons/results.png</file>
+    <file>icons/results@2x.png</file>
+    <file>icons/chevron-down.png</file>
+    <file>icons/chevron-down@2x.png</file>
+    <file>icons/chevron-up.png</file>
+    <file>icons/chevron-up@2x.png</file>
+    <file>icons/check.png</file>
+    <file>icons/check@2x.png</file>
+    <!-- Fonty: po wrzuceniu plikow do folderu fonts/ odkomentuj i dopisz ich nazwy
+    <file>fonts/Inter-Regular.ttf</file>
+    <file>fonts/Inter-SemiBold.ttf</file>
+    <file>fonts/Inter-Bold.ttf</file>
+    <file>fonts/JetBrainsMono-Regular.ttf</file>
+    <file>fonts/JetBrainsMono-Bold.ttf</file>
+    -->
+
+
+    
+  </qresource>
+</RCC>
