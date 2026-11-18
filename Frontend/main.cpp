@@ -13,7 +13,9 @@ int main(int argc, char *argv[])
     // wtedy Qt uzyje czcionki zastepczej.
     QDirIterator fonts(":/fonts", {"*.ttf", "*.otf"}, QDir::Files, QDirIterator::Subdirectories);
     while (fonts.hasNext()) {
-        QFontDatabase::addApplicationFont(fonts.next());
+        const QString path = fonts.next();
+        const int id = QFontDatabase::addApplicationFont(path);
+        qDebug() << "Font:" << path << "->" << QFontDatabase::applicationFontFamilies(id);
     }
 
     // Wspolny styl calej aplikacji
